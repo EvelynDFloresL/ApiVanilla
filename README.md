@@ -23,6 +23,8 @@ Cambiar si es diferente o agregar contraseña si la tiene.
 
 <?php
 
+<?php
+
 $host = "localhost";
 $user = "root";
 $pass = "";
@@ -42,8 +44,6 @@ if ($mysqli->connect_error) {
 ### Codigo Fuente api.php
 
 <?php
-ini_set('display_errors', 1);
-error_reporting(E_ALL);
 header("Content-Type: application/json");
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: GET, POST");
@@ -54,9 +54,11 @@ require_once __DIR__ . "/conexion.php";
 
 $method = $_SERVER['REQUEST_METHOD'];
 
+//METODO GET 
+
 if ($method === "GET") {
 
-    $sql = "SELECT * FROM product ORDER BY date_create DESC";
+    $sql = "SELECT * FROM product ORDER BY date_create DESC"; //Consulta en la bd
     $result = $mysqli->query($sql);
 
     if (!$result) {
@@ -68,7 +70,7 @@ if ($method === "GET") {
         exit;
     }
 
-    $products = [];
+    $products = [];//Almacena los productos
 
     while ($row = $result->fetch_assoc()) {
         $products[] = $row;
@@ -80,6 +82,8 @@ if ($method === "GET") {
     ]);
     exit;
 }
+
+//METODO POST
 
 if ($method === "POST") {
 
@@ -108,7 +112,7 @@ if ($method === "POST") {
 
     $price = (float)$price;
 
-    $stmt = $mysqli->prepare("INSERT INTO product (name, price) VALUES (?, ?)");
+    $stmt = $mysqli->prepare("INSERT INTO product (name, price) VALUES (?, ?)"); //Mandamos los datos a insertar
 
     if (!$stmt) {
         http_response_code(500);
@@ -132,7 +136,7 @@ if ($method === "POST") {
         exit;
     }
 
-    // Obtener ID insertado
+    // Obtener ID insertado para mostrarlo en el json
     $insertId = $stmt->insert_id;
 
     $stmt->close();
@@ -143,6 +147,8 @@ if ($method === "POST") {
         "id" => $insertId
     ]);
 }
+
+
 
 ### CODIGO FUENTE index.html
 
@@ -158,7 +164,7 @@ if ($method === "POST") {
 <body>
     <h1>PRODUCTOS</h1>
     <form id="productForm" method="POST">
-        <input type="text" id="name" placeholder="Nombre del producto" required> <br> <br>
+        <input type="text" id="name" pattern="[A-Za-zÁÉÍÓÚáéíóúÑñ ]+" placeholder="Nombre del producto" required> <br> <br>
         <input type="number" id="price" step="0.01" placeholder="Precio del producto" required> <br> <br>
 
         <button type="submit">Agregar</button>
@@ -172,7 +178,7 @@ if ($method === "POST") {
 
         document.addEventListener("DOMContentLoaded", cargarProductos);
 
-        async function cargarProductos() {
+        async function cargarProductos() { // Funcion asincrona 
 
             try {
 
@@ -202,7 +208,7 @@ if ($method === "POST") {
 
             lista.innerHTML = ""; // limpiar antes de renderizar
 
-            products.forEach(product => {
+            products.forEach(product => { // Cliclo para mostrar los productos
 
                 const li = document.createElement("li");
 
@@ -260,6 +266,7 @@ if ($method === "POST") {
                 document.getElementById("productLista").innerHTML = "Error al conectar con el servidor";
             }
         }
+
 
     </script>
 
