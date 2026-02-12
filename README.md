@@ -17,7 +17,7 @@ CREATE TABLE product (
     date_create TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-# Configuracion a la BD conexion.php
+### Configuracion a la BD conexion.php
 
 Cambiar si es diferente o agregar contraseña si la tiene.
 
@@ -39,7 +39,7 @@ if ($mysqli->connect_error) {
     exit;
 }
 
-#Codigo Fuente api.php
+### Codigo Fuente api.php
 
 <?php
 ini_set('display_errors', 1);
@@ -144,7 +144,8 @@ if ($method === "POST") {
     ]);
 }
 
-#CODIGO FUENTE index.html
+### CODIGO FUENTE index.html
+
 <!DOCTYPE html>
 <html lang="en">
 
