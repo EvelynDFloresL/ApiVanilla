@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inicio</title>
+</head>
+
+<body>
+    <h1>PRODUCTOS</h1>
+    <form id="productForm" method="POST">
+        <input type="text" id="name" placeholder="Nombre del producto" required> <br> <br>
+        <input type="number" id="price" step="0.01" placeholder="Precio del producto" required> <br> <br>
+
+        <button type="submit">Agregar</button>
+    </form>
+
+    <ul id="productLista"></ul>
+
+    <script>
+        const form = document.getElementById("productForm");
+        const apiURL = "api.php";
+
+        document.addEventListener("DOMContentLoaded", cargarProductos);
+
+        async function cargarProductos() {
+
+            try {
+
+                const response = await fetch(apiURL);
+
+                if (!response.ok) {
+                    throw new Error("Error HTTP: " + response.status);
+                }
+
+                const data = await response.json();
+
+                if (!data.success) {
+                    console.error(data.message);
+                    return;
+                }
+
+                mostrarProductos(data.data);
+
+            } catch (error) {
+                console.error("Error al cargar productos:", error);
+            }
+        }
+
+        function mostrarProductos(products) {
+
+            const lista = document.getElementById("productLista");
+
+            lista.innerHTML = ""; // limpiar antes de renderizar
+
+            products.forEach(product => {
+
+                const li = document.createElement("li");
+
+                li.textContent =
+                    product.name + " - $" + product.price + " - " + product.date_create;
+
+                lista.appendChild(li);
+            });
+        }
+
+
+        form.addEventListener("submit", function (event) {
+            event.preventDefault();
+            insertarProducto();
+        });
+
+        async function insertarProducto() {
+
+            const name = document.getElementById("name").value.trim();
+            const price = document.getElementById("price").value.trim();
+
+            if (name === "" || price === "") {
+                alert("Todos los campos son obligatorios");
+                return;
+            }
+
+            try {
+
+                const response = await fetch(apiURL, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        name: name,
+                        price: price
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error("Error HTTP: " + response.status);
+                }
+
+                const data = await response.json();
+
+                if (data.success) {
+                    form.reset();
+                    cargarProductos();
+                } else {
+                    document.getElementById("productLista").innerHTML = data.message;
+                }
+
+            } catch (error) {
+                console.error("Error:", error);
+                document.getElementById("productLista").innerHTML = "Error al conectar con el servidor";
+            }
+        }
+
+        
+    </script>
+
+
+
+</body>
+
+</html>
